@@ -1,8 +1,8 @@
 ---
-import { AstroFont } from 'astro-font';
 import AppFooter from "../components/AppFooter.astro";
 import AppHeader from "../components/AppHeader.astro";
-import "./../tailus.css"
+import "./../tailus.css";
+import "./../urbanist.css";
 ---
 
 <!DOCTYPE html>
@@ -12,22 +12,8 @@ import "./../tailus.css"
         <meta name="viewport" content="width=device-width" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
-        <meta name="description" content="Template built with tailwindcss using Tailus blocks v2" />
-        <title>Tailus astro theme</title>
-
-        <AstroFont
-            config={[
-                {
-                    src: [],
-                    name: "Urbanist",
-                    preload: true,
-                    display: "swap",
-                    selector: "html",
-                    fallback: "sans-serif",
-                    googleFontsURL: 'https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap',
-                },
-            ]}
-        />
+        <meta name="description" content="StartUp Continuity maps operations, surfaces risk, and designs continuity plans so teams can adopt AI with confidence." />
+        <title>StartUp Continuity | AI continuity & operations visibility</title>
     </head>
     <body class="bg-white dark:bg-gray-950">
         <AppHeader />
