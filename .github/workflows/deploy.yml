@@ -1,8 +1,8 @@
-name: Build & Deploy to Hostinger (FTP)
+name: Build & Deploy to Hostinger (FTP, pnpm)
 
 on:
   push:
-    branches: [ "main" ]  # adjust if your branch is different
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -15,14 +15,24 @@ jobs:
       - name: Use Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ secrets.NODE_VERSION || '20' }}
-          cache: npm
+          node-version: '20'
+          cache: 'pnpm'   # cache based on pnpm-lock.yaml
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Enable corepack & set pnpm version
+        run: |
+          corepack enable
+          # If your package.json has "packageManager": "pnpm@x.y.z", corepack will use that version.
+          # Otherwise you can pin a version explicitly:
+          # corepack prepare pnpm@9.12.0 --activate
+
+      - name: Install dependencies (pnpm)
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run build
+        run: pnpm build
+
+      - name: List build output (debug)
+        run: ls -la dist
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -30,8 +40,10 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ${{ secrets.FTP_PROTOCOL }}
-          local-dir: ${{ secrets.BUILD_DIR || 'dist' }}/
+          protocol: ${{ secrets.FTP_PROTOCOL }}   # ftps recommended
+          # If Hostinger gave you a non-default port, add:
+          # port: ${{ secrets.FTP_PORT }}
+          local-dir: dist/
           server-dir: ${{ secrets.FTP_REMOTE_DIR }}/
           dangerous-clean-slate: false
           exclude: |
