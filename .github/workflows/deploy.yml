@@ -18,12 +18,12 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: Enable corepack (installs pnpm)
-        run: corepack enable
-
-      # optional: force a specific pnpm version if your package.json doesn’t pin it
-      # - name: Prepare pnpm version
-      #   run: corepack prepare pnpm@9.12.0 --activate
+      # ✅ Install pnpm on the runner
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9               # pin if you like; omit to use latest v9
+          run_install: false       # we'll run install ourselves
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -31,17 +31,13 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: List build output (debug)
-        run: ls -la dist
-
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ${{ secrets.FTP_PROTOCOL }}   # ftps recommended
-          # port: ${{ secrets.FTP_PORT }}         # only if Hostinger requires a non-default port
+          protocol: ${{ secrets.FTP_PROTOCOL }}   # use ftps if possible
           local-dir: dist/
           server-dir: ${{ secrets.FTP_REMOTE_DIR }}/
           dangerous-clean-slate: false
