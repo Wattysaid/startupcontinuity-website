@@ -2,7 +2,7 @@ name: Build & Deploy to Hostinger (FTP, pnpm)
 
 on:
   push:
-    branches: [ "main" ]   # change if you deploy from a different branch
+    branches: [ "main" ]   # adjust if you deploy from another branch
   workflow_dispatch:
 
 jobs:
@@ -12,18 +12,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Install pnpm explicitly
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9          # use a stable pnpm version
+          run_install: false  # we'll run install ourselves
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'         # cache keyed from pnpm-lock.yaml
-
-      # Ensure pnpm is available on PATH
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9            # or omit to use latest v9
-          run_install: false
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -38,7 +38,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ${{ secrets.FTP_PROTOCOL }}   # use ftps if available
-          # port: ${{ secrets.FTP_PORT }}         # only if Hostinger told you a non-default port
+          # port: ${{ secrets.FTP_PORT }}         # only if Hostinger uses a non-default port
           local-dir: dist/
           server-dir: ${{ secrets.FTP_REMOTE_DIR }}/
           dangerous-clean-slate: false
