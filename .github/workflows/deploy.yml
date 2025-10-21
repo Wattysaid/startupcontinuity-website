@@ -12,20 +12,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'   # cache based on pnpm-lock.yaml
+          cache: 'pnpm'
 
-      - name: Enable corepack & set pnpm version
-        run: |
-          corepack enable
-          # If your package.json has "packageManager": "pnpm@x.y.z", corepack will use that version.
-          # Otherwise you can pin a version explicitly:
-          # corepack prepare pnpm@9.12.0 --activate
+      - name: Enable corepack (installs pnpm)
+        run: corepack enable
 
-      - name: Install dependencies (pnpm)
+      # optional: force a specific pnpm version if your package.json doesn’t pin it
+      # - name: Prepare pnpm version
+      #   run: corepack prepare pnpm@9.12.0 --activate
+
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build
@@ -41,8 +41,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ${{ secrets.FTP_PROTOCOL }}   # ftps recommended
-          # If Hostinger gave you a non-default port, add:
-          # port: ${{ secrets.FTP_PORT }}
+          # port: ${{ secrets.FTP_PORT }}         # only if Hostinger requires a non-default port
           local-dir: dist/
           server-dir: ${{ secrets.FTP_REMOTE_DIR }}/
           dangerous-clean-slate: false
